@@ -1,19 +1,10 @@
-import express, { response } from "express";
-import { PORT, mongoDBURL } from "./config.js";
-import mongoose from "mongoose";
-import { Team } from "./models/teamModels.js";
+import express from 'express';
+import { Team } from '../models/teamModels';
 
-const app = express();
-
-app.use(express.json())
-
-app.get('/', (request, response) => {
-    console.log(request);
-    return response.status(234).send('Welcome to PUBG LEAGUE')
-});
+const router = express.Router();
 
 // Route for Save a new Team
-app.post('/team', async (request, response) => {
+router.post('/team', async (request, response) => {
     try {
         if (!request.body.title || !request.body.manager) {
             return response.status(400).send({
@@ -35,7 +26,7 @@ app.post('/team', async (request, response) => {
 })
 
 // Route for get All Books from database
-app.get('/team', async (request, response) => {
+router.get('/team', async (request, response) => {
     try {
         const teams = await Team.find({});
 
@@ -50,7 +41,7 @@ app.get('/team', async (request, response) => {
 })
 
 // Route for get one Books from database by id
-app.get('/team/:id', async (request, response) => {
+router.get('/team/:id', async (request, response) => {
     try {
 
         const { id } = request.params;
@@ -65,7 +56,7 @@ app.get('/team/:id', async (request, response) => {
 })
 
 // Route for Update a book
-app.put('/team/:id', async (request, response) => {
+router.put('/team/:id', async (request, response) => {
     try {
         if (!request.body.title || !request.body.manager) {
             return response.status(400).send({
@@ -89,7 +80,7 @@ app.put('/team/:id', async (request, response) => {
 })
 
 // Route for Delete a book
-app.delete('/team/:id', async (request, response) => {
+router.delete('/team/:id', async (request, response) => {
     try {
         const { id } = request.params;
 
@@ -105,15 +96,3 @@ app.delete('/team/:id', async (request, response) => {
         response.status(500).send({message: error.message})
     }
 })
-
-mongoose
-    .connect(mongoDBURL)
-    .then(() => {
-        console.log('App connected to database');
-        app.listen(PORT, () => {
-            console.log(`App is listening to port: ${PORT}`);
-        });
-    })
-    .catch((error) => {
-        console.log(error);
-    });
